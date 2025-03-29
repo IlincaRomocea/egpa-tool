@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>EGPA Digital Assistant</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; max-width: 960px; }
+    h1, h2, h3 { color: #2c3e50; }
+    .track, .section { margin-bottom: 30px; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
+    label { display: block; margin-top: 10px; }
+    input, select, textarea { margin-top: 5px; width: 100%; padding: 5px; }
+    button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+    .alert { font-weight: bold; font-size: 1.1em; padding: 10px; margin-top: 20px; border-radius: 5px; }
+    .stable { background-color: #e0f7e9; color: #2e7d32; }
+    .possible { background-color: #fff8e1; color: #f57c00; }
+    .significant, .likely { background-color: #ffebee; color: #c62828; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h1>EGPA Digital Assistant</h1>
+  <p>This tool supports screening and monitoring for <strong>Eosinophilic Granulomatosis with Polyangiitis (EGPA)</strong>.</p>
+  <ul>
+    <li><strong>Clinicians:</strong> Evaluate core criteria and red flags for EGPA with guidance based on scoring.</li>
+    <li><strong>Patients:</strong> Monitor your symptoms, flares, and medication side effects. Download a private summary for your doctor.</li>
+  </ul>
+  <p><em>No data is saved or transmitted. All data remains private in your browser.</em></p>
+
+  <div class="track">
+    <h2>Select Your Track</h2>
+    <button onclick="showTrack('clinician')">I’m a Clinician</button>
+    <button onclick="showTrack('patient')">I’m a Patient</button>
+  </div>
+
+  <!-- Clinician Track -->
+  <div id="clinician" class="track hidden">
+    <h2>Clinician Track – EGPA Screening</h2>
+    <form id="clinicianForm">
+      <h3>Core Criteria</h3>
+      <label><input type="checkbox" name="asthma"> Late-onset Asthma (2 pts)</label>
+      <label><input type="checkbox" name="eos"> Eosinophils >1000 (2 pts)</label>
+      <label><input type="checkbox" name="polyps"> Nasal Polyps / Atopy (1 pt)</label>
+      <label><input type="checkbox" name="steroids"> Corticosteroid Responsive (1 pt)</label>
+      <h3>Red Flags</h3>
+      <label><input type="checkbox" name="anca"> MPO-ANCA Positive (1.5 pts)</label>
+      <label><input type="checkbox" name="lung"> Lung Infiltrates (1 pt)</label>
+      <label><input type="checkbox" name="neuro"> Neuropathy (1 pt)</label>
+      <label><input type="checkbox" name="gi"> GI Symptoms (0.5 pt)</label>
+      <label><input type="checkbox" name="cardiac"> Cardiac Involvement (0.5 pt)</label>
+      <label><input type="checkbox" name="skin"> Skin Lesions (0.5 pt)</label>
+    </form>
+    <button onclick="calculateClinician()">Calculate Score</button>
+    <div id="clinicianSummary" class="alert hidden"></div>
+    <button onclick="downloadPDF('clinicianForm', 'clinicianSummary', 'EGPA_Clinician_Report')">Download PDF</button>
+  </div>
+
+  <!-- Patient Track -->
+  <div id="patient" class="track hidden">
+    <h2>Patient Track – Monitoring Symptoms & Treatment</h2>
+    <form id="patientForm">
+      <h3>General Well-Being</h3>
+      <label>General feeling (0 = Very good, 10 = Very bad): <input type="number" name="general" min="0" max="10"></label>
+      <label>Fatigue level (0 = Energetic, 10 = Exhausted): <input type="number" name="fatigue" min="0" max="10"></label>
+      <label>Sleep quality (0 = Very good, 10 = Very poor): <input type="number" name="sleep_quality" min="0" max="10"></label>
+      <label>Can you do your usual daily tasks?
+        <select name="tasks"><option>Yes</option><option>Partially</option><option>No</option></select>
+      </label>
+      <h3>Disease-Related Symptoms</h3>
+      <label>Shortness of breath: <select name="breath"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
+      <label>Chest tightness: <select name="chest"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
+      <label>Sinus pain or congestion: <select name="sinus"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
+      <label>Skin changes: <select name="skin"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
+      <label>Neuropathic pain: <select name="neuro"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
+      <label>Joint pain: <select name="joint"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
+      <label>Abdominal pain: <select name="abdo"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
+      <label>Fever/night sweats: <select name="fever"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
+      <h3>Medication Side Effects</h3>
+      <label>Weight gain/swelling: <select name="weight"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
+      <label>Sleep disturbances: <select name="sleep"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
+      <label>Mood changes: <select name="mood"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
+      <label>GI discomfort: <select name="gi"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
+      <label>Frequent infections: <select name="infection"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
+    </form>
+    <button onclick="calculatePatient()">Calculate My Summary</button>
+    <div id="patientSummary" class="alert hidden"></div>
+    <button onclick="downloadPDF('patientForm', 'patientSummary', 'EGPA_Patient_Report')">Download PDF</button>
+  </div>
+
+  <script>
+    function showTrack(id) {
+      document.getElementById("clinician").classList.add("hidden");
+      document.getElementById("patient").classList.add("hidden");
+      document.getElementById(id).classList.remove("hidden");
+    }
+
+    function getScore(val) {
+      switch(val) {
+        case "Mild": return 1; case "Moderate": return 2; case "Severe": return 3;
+        default: return 0;
+      }
+    }
+
+    function calculateClinician() {
+      const f = document.forms["clinicianForm"];
+      let score = 0;
+      if (f["asthma"].checked) score += 2;
+      if (f["eos"].checked) score += 2;
+      if (f["polyps"].checked) score += 1;
+      if (f["steroids"].checked) score += 1;
+      let red = 0;
+      if (f["anca"].checked) red += 1.5;
+      if (f["lung"].checked) red += 1;
+      if (f["neuro"].checked) red += 1;
+      if (f["gi"].checked) red += 0.5;
+      if (f["cardiac"].checked) red += 0.5;
+      if (f["skin"].checked) red += 0.5;
+      if (red > 5) red = 5;
+      score += red;
+      const result = document.getElementById("clinicianSummary");
+      result.classList.remove("hidden");
+      if (score <= 3) {
+        result.innerText = "Score: " + score + " – Low EGPA suspicion.";
+        result.className = "alert stable";
+      } else if (score <= 6) {
+        result.innerText = "Score: " + score + " – Possible EGPA. Consider specialist referral.";
+        result.className = "alert possible";
+      } else {
+        result.innerText = "Score: " + score + " – Likely EGPA. Urgent referral recommended.";
+        result.className = "alert likely";
+      }
+    }
+
+    function calculatePatient() {
+      const f = document.forms["patientForm"];
+      let flare = ["breath", "chest", "sinus", "skin", "neuro", "joint", "abdo", "fever"]
+        .reduce((sum, name) => sum + getScore(f[name].value), 0);
+      let side = ["weight", "sleep", "mood", "gi", "infection"]
+        .reduce((sum, name) => sum + getScore(f[name].value), 0);
+
+      const result = document.getElementById("patientSummary");
+      result.classList.remove("hidden");
+      if (flare >= 10) {
+        result.innerText = "Significant flare – contact your doctor." + (side >= 6 ? " ⚠️ Possible medication side effects." : "");
+        result.className = "alert significant";
+      } else if (flare >= 5) {
+        result.innerText = "Possible flare – monitor symptoms." + (side >= 6 ? " ⚠️ Possible medication side effects." : "");
+        result.className = "alert possible";
+      } else {
+        result.innerText = "Stable – continue monitoring." + (side >= 6 ? " ⚠️ Some side effects detected." : "");
+        result.className = "alert stable";
+      }
+    }
+
+    function downloadPDF(formId, summaryId, filename) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const form = document.getElementById(formId);
+      let data = new FormData(form);
+      let y = 10;
+      doc.setFontSize(12);
+      for (let [key, val] of data.entries()) {
+        doc.text(key.replace(/_/g, " ") + ": " + val, 10, y);
+        y += 8;
+      }
+      doc.text("Summary: " + document.getElementById(summaryId).innerText, 10, y + 10);
+      doc.save(filename + ".pdf");
+    }
+  </script>
+</body>
+</html>
