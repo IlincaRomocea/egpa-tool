@@ -1,34 +1,152 @@
-
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <title>EGPA Digital Assistant</title>
+  <!-- Google Fonts: Montserrat with light and extra-bold weights -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;800&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; max-width: 960px; }
-    h1, h2, h3 { color: #2c3e50; }
-    .track, .section { margin-bottom: 30px; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
-    label { display: block; margin-top: 10px; }
-    input, select, textarea { margin-top: 5px; width: 100%; padding: 5px; }
-    button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
-    .alert { font-weight: bold; font-size: 1.1em; padding: 10px; margin-top: 20px; border-radius: 5px; }
+    /* Global Styles */
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    h1 {
+      font-weight: 800;
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    h2, h3 {
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+    p, label, select, input, button {
+      font-weight: 300;
+    }
+    /* Glassmorphism container */
+    .track, .section {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    /* Button styling with hover effects */
+    button {
+      background: rgba(255, 255, 255, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+      margin-top: 15px;
+    }
+    button:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.05);
+    }
+    /* Form Elements */
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input, select, textarea {
+      margin-top: 5px;
+      width: 100%;
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.5);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+      font-family: inherit;
+      font-size: 14px;
+      color: #333;
+    }
+    /* Dropdown styling */
+    select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="10"><path fill="%23333" d="M0 0l7 10 7-10z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 10px;
+    }
+    /* Slider styling for General Well-Being */
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 5px;
+      outline: none;
+      opacity: 0.9;
+      transition: opacity 0.2s;
+    }
+    input[type=range]:hover {
+      opacity: 1;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #2c3e50;
+      cursor: pointer;
+      border: 2px solid #fff;
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #2c3e50;
+      cursor: pointer;
+      border: 2px solid #fff;
+    }
+    /* Alert messages */
+    .alert {
+      font-weight: 600;
+      font-size: 1.1em;
+      padding: 10px;
+      margin-top: 20px;
+      border-radius: 5px;
+    }
     .stable { background-color: #e0f7e9; color: #2e7d32; }
     .possible { background-color: #fff8e1; color: #f57c00; }
     .significant, .likely { background-color: #ffebee; color: #c62828; }
     .hidden { display: none; }
+    /* Track selection buttons centered */
+    .track-selection {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .track-selection button {
+      margin: 0 10px;
+    }
+    /* Style for the slider value display */
+    .slider-value {
+      font-weight: 600;
+      margin-left: 10px;
+    }
   </style>
 </head>
 <body>
   <h1>EGPA Digital Assistant</h1>
-  <p>This tool supports screening and monitoring for <strong>Eosinophilic Granulomatosis with Polyangiitis (EGPA)</strong>.</p>
-  <ul>
-    <li><strong>Clinicians:</strong> Evaluate core criteria and red flags for EGPA with guidance based on scoring.</li>
-    <li><strong>Patients:</strong> Monitor your symptoms, flares, and medication side effects. Download a private summary for your doctor.</li>
-  </ul>
-  <p><em>No data is saved or transmitted. All data remains private in your browser.</em></p>
+  <p style="text-align:center;">This tool supports screening and monitoring for <strong>Eosinophilic Granulomatosis with Polyangiitis (EGPA)</strong>.</p>
+  <p style="text-align:center;"><em>No data is saved or transmitted. All data remains private in your browser.</em></p>
 
-  <div class="track">
+  <div class="track track-selection">
     <h2>Select Your Track</h2>
     <button onclick="showTrack('clinician')">I’m a Clinician</button>
     <button onclick="showTrack('patient')">I’m a Patient</button>
@@ -39,17 +157,77 @@
     <h2>Clinician Track – EGPA Screening</h2>
     <form id="clinicianForm">
       <h3>Core Criteria</h3>
-      <label><input type="checkbox" name="asthma"> Late-onset Asthma (2 pts)</label>
-      <label><input type="checkbox" name="eos"> Eosinophils >1000 (2 pts)</label>
-      <label><input type="checkbox" name="polyps"> Nasal Polyps / Atopy (1 pt)</label>
-      <label><input type="checkbox" name="steroids"> Corticosteroid Responsive (1 pt)</label>
+      <label>
+        Late-onset Asthma (2 pts):
+        <select name="asthma">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </label>
+      <label>
+        Eosinophils &gt;1000 (2 pts):
+        <select name="eos">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </label>
+      <label>
+        Nasal Polyps / Atopy (1 pt):
+        <select name="polyps">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </label>
+      <label>
+        Corticosteroid Responsive (1 pt):
+        <select name="steroids">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </label>
       <h3>Red Flags</h3>
-      <label><input type="checkbox" name="anca"> MPO-ANCA Positive (1.5 pts)</label>
-      <label><input type="checkbox" name="lung"> Lung Infiltrates (1 pt)</label>
-      <label><input type="checkbox" name="neuro"> Neuropathy (1 pt)</label>
-      <label><input type="checkbox" name="gi"> GI Symptoms (0.5 pt)</label>
-      <label><input type="checkbox" name="cardiac"> Cardiac Involvement (0.5 pt)</label>
-      <label><input type="checkbox" name="skin"> Skin Lesions (0.5 pt)</label>
+      <label>
+        MPO-ANCA Positive (1.5 pts):
+        <select name="anca">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </label>
+      <label>
+        Lung Infiltrates (1 pt):
+        <select name="lung">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </label>
+      <label>
+        Neuropathy (1 pt):
+        <select name="neuro">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </label>
+      <label>
+        GI Symptoms (0.5 pt):
+        <select name="gi">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </label>
+      <label>
+        Cardiac Involvement (0.5 pt):
+        <select name="cardiac">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </label>
+      <label>
+        Skin Lesions (0.5 pt):
+        <select name="skin">
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </label>
     </form>
     <button onclick="calculateClinician()">Calculate Score</button>
     <div id="clinicianSummary" class="alert hidden"></div>
@@ -61,27 +239,162 @@
     <h2>Patient Track – Monitoring Symptoms & Treatment</h2>
     <form id="patientForm">
       <h3>General Well-Being</h3>
-      <label>General feeling (0 = Very good, 10 = Very bad): <input type="number" name="general" min="0" max="10"></label>
-      <label>Fatigue level (0 = Energetic, 10 = Exhausted): <input type="number" name="fatigue" min="0" max="10"></label>
-      <label>Sleep quality (0 = Very good, 10 = Very poor): <input type="number" name="sleep_quality" min="0" max="10"></label>
-      <label>Can you do your usual daily tasks?
-        <select name="tasks"><option>Yes</option><option>Partially</option><option>No</option></select>
+      <!-- Datalist for slider increments (not visually used, but kept for reference) -->
+      <datalist id="tickmarks">
+        <option value="0"></option>
+        <option value="1"></option>
+        <option value="2"></option>
+        <option value="3"></option>
+        <option value="4"></option>
+        <option value="5"></option>
+        <option value="6"></option>
+        <option value="7"></option>
+        <option value="8"></option>
+        <option value="9"></option>
+        <option value="10"></option>
+      </datalist>
+      <label>
+        General feeling (0 = Very good, 10 = Very bad):
+        <input type="range" name="general" min="0" max="10" step="1" value="5" list="tickmarks" oninput="updateSliderValue(this, 'generalOutput')">
+        <span class="slider-value" id="generalOutput">5</span>
+      </label>
+      <label>
+        Fatigue level (0 = Energetic, 10 = Exhausted):
+        <input type="range" name="fatigue" min="0" max="10" step="1" value="5" list="tickmarks" oninput="updateSliderValue(this, 'fatigueOutput')">
+        <span class="slider-value" id="fatigueOutput">5</span>
+      </label>
+      <label>
+        Sleep quality (0 = Very good, 10 = Very poor):
+        <input type="range" name="sleep_quality" min="0" max="10" step="1" value="5" list="tickmarks" oninput="updateSliderValue(this, 'sleepOutput')">
+        <span class="slider-value" id="sleepOutput">5</span>
+      </label>
+      <label>
+        Can you do your usual daily tasks?
+        <select name="tasks">
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+          <option value="Partially">Partially</option>
+        </select>
       </label>
       <h3>Disease-Related Symptoms</h3>
-      <label>Shortness of breath: <select name="breath"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
-      <label>Chest tightness: <select name="chest"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
-      <label>Sinus pain or congestion: <select name="sinus"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
-      <label>Skin changes: <select name="skin"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
-      <label>Neuropathic pain: <select name="neuro"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
-      <label>Joint pain: <select name="joint"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
-      <label>Abdominal pain: <select name="abdo"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
-      <label>Fever/night sweats: <select name="fever"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
+      <label>
+        Shortness of breath:
+        <select name="breath">
+          <option>None</option>
+          <option>Mild</option>
+          <option>Moderate</option>
+          <option>Severe</option>
+        </select>
+      </label>
+      <label>
+        Chest tightness:
+        <select name="chest">
+          <option>None</option>
+          <option>Mild</option>
+          <option>Moderate</option>
+          <option>Severe</option>
+        </select>
+      </label>
+      <label>
+        Sinus pain or congestion:
+        <select name="sinus">
+          <option>None</option>
+          <option>Mild</option>
+          <option>Moderate</option>
+          <option>Severe</option>
+        </select>
+      </label>
+      <label>
+        Skin changes:
+        <select name="skin">
+          <option>None</option>
+          <option>Mild</option>
+          <option>Moderate</option>
+          <option>Severe</option>
+        </select>
+      </label>
+      <label>
+        Neuropathic pain:
+        <select name="neuro">
+          <option>None</option>
+          <option>Mild</option>
+          <option>Moderate</option>
+          <option>Severe</option>
+        </select>
+      </label>
+      <label>
+        Joint pain:
+        <select name="joint">
+          <option>None</option>
+          <option>Mild</option>
+          <option>Moderate</option>
+          <option>Severe</option>
+        </select>
+      </label>
+      <label>
+        Abdominal pain:
+        <select name="abdo">
+          <option>None</option>
+          <option>Mild</option>
+          <option>Moderate</option>
+          <option>Severe</option>
+        </select>
+      </label>
+      <label>
+        Fever/night sweats:
+        <select name="fever">
+          <option>None</option>
+          <option>Mild</option>
+          <option>Moderate</option>
+          <option>Severe</option>
+        </select>
+      </label>
       <h3>Medication Side Effects</h3>
-      <label>Weight gain/swelling: <select name="weight"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
-      <label>Sleep disturbances: <select name="sleep"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
-      <label>Mood changes: <select name="mood"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
-      <label>GI discomfort: <select name="gi"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
-      <label>Frequent infections: <select name="infection"><option>None</option><option>Mild</option><option>Moderate</option><option>Severe</option></select></label>
+      <label>
+        Weight gain/swelling:
+        <select name="weight">
+          <option>None</option>
+          <option>Mild</option>
+          <option>Moderate</option>
+          <option>Severe</option>
+        </select>
+      </label>
+      <label>
+        Sleep disturbances:
+        <select name="sleep">
+          <option>None</option>
+          <option>Mild</option>
+          <option>Moderate</option>
+          <option>Severe</option>
+        </select>
+      </label>
+      <label>
+        Mood changes:
+        <select name="mood">
+          <option>None</option>
+          <option>Mild</option>
+          <option>Moderate</option>
+          <option>Severe</option>
+        </select>
+      </label>
+      <label>
+        GI discomfort:
+        <select name="gi_side">
+          <option>None</option>
+          <option>Mild</option>
+          <option>Moderate</option>
+          <option>Severe</option>
+        </select>
+      </label>
+      <label>
+        Frequent infections:
+        <select name="infection">
+          <option>None</option>
+          <option>Mild</option>
+          <option>Moderate</option>
+          <option>Severe</option>
+        </select>
+      </label>
     </form>
     <button onclick="calculatePatient()">Calculate My Summary</button>
     <div id="patientSummary" class="alert hidden"></div>
@@ -94,10 +407,18 @@
       document.getElementById("patient").classList.add("hidden");
       document.getElementById(id).classList.remove("hidden");
     }
+    
+    // Function to update the slider value display
+    function updateSliderValue(slider, outputId) {
+      document.getElementById(outputId).innerText = slider.value;
+    }
 
+    // Helper for scoring dropdown responses (used in patient scoring)
     function getScore(val) {
       switch(val) {
-        case "Mild": return 1; case "Moderate": return 2; case "Severe": return 3;
+        case "Mild": return 1;
+        case "Moderate": return 2;
+        case "Severe": return 3;
         default: return 0;
       }
     }
@@ -105,19 +426,23 @@
     function calculateClinician() {
       const f = document.forms["clinicianForm"];
       let score = 0;
-      if (f["asthma"].checked) score += 2;
-      if (f["eos"].checked) score += 2;
-      if (f["polyps"].checked) score += 1;
-      if (f["steroids"].checked) score += 1;
+      // Core Criteria: add points if the answer is Yes
+      if (f["asthma"].value === "Yes") score += 2;
+      if (f["eos"].value === "Yes") score += 2;
+      if (f["polyps"].value === "Yes") score += 1;
+      if (f["steroids"].value === "Yes") score += 1;
+      
+      // Red Flags: sum points, capped at 5
       let red = 0;
-      if (f["anca"].checked) red += 1.5;
-      if (f["lung"].checked) red += 1;
-      if (f["neuro"].checked) red += 1;
-      if (f["gi"].checked) red += 0.5;
-      if (f["cardiac"].checked) red += 0.5;
-      if (f["skin"].checked) red += 0.5;
+      if (f["anca"].value === "Yes") red += 1.5;
+      if (f["lung"].value === "Yes") red += 1;
+      if (f["neuro"].value === "Yes") red += 1;
+      if (f["gi"].value === "Yes") red += 0.5;
+      if (f["cardiac"].value === "Yes") red += 0.5;
+      if (f["skin"].value === "Yes") red += 0.5;
       if (red > 5) red = 5;
       score += red;
+      
       const result = document.getElementById("clinicianSummary");
       result.classList.remove("hidden");
       if (score <= 3) {
@@ -134,9 +459,10 @@
 
     function calculatePatient() {
       const f = document.forms["patientForm"];
+      // Only disease-related symptoms and side effects are scored
       let flare = ["breath", "chest", "sinus", "skin", "neuro", "joint", "abdo", "fever"]
         .reduce((sum, name) => sum + getScore(f[name].value), 0);
-      let side = ["weight", "sleep", "mood", "gi", "infection"]
+      let side = ["weight", "sleep", "mood", "gi_side", "infection"]
         .reduce((sum, name) => sum + getScore(f[name].value), 0);
 
       const result = document.getElementById("patientSummary");
